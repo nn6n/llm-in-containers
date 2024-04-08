@@ -103,7 +103,7 @@ def build_table_n_text_engine():
         max_function_calls=3,
         verbose=True,
         system_prompt=f"""\
-            Respond in Chinese.
+            Respond in English.
             
             If you inquire general-purpose questions, refer to the text_tool as a priority.
             For questions involving numbers and figures, refer to the table_tool first.

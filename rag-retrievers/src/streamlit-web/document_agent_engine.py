@@ -137,7 +137,7 @@ def build_doc_agent_engine(similarity_top_k=2): #key_words, docs=None,
             #output_parser=output_parser, 
             
             system_prompt=f"""\
-                Make sure to respond in Chinese.
+                Make sure to respond in English.
 
                 You must ALWAYS use at least one of the tools provided when answering a question; do NOT rely on prior knowledge.
                 Please refer to the summary_tool first if you inquire summarization-wise questions about {kw}
@@ -150,6 +150,7 @@ def build_doc_agent_engine(similarity_top_k=2): #key_words, docs=None,
         ##Build Composable Retriever over the agents
         #define top-level nodes
         instru =(
+            "Make sure to respond in English."
             "This content contains some introduction to The Legend of Zelda: Tears of the Kingdom"
              "on the following aspect {kw}, "
             f"Use this index if you need to look up specific facts about {kw}, "
