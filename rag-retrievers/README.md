@@ -69,7 +69,7 @@ Before diving into this demo, please ensure that your system meets the following
     Add your markdown format file under `/rag-retrievers/data`.
     Replace all occurrences of `/RAG-Zelda-Tears-of-the-Kingdom(Fan-made).md` with the new filename throughout in project.
 
-4. Create a .env file in the rag-retrievers directory:
+4. Create a .env file in the `rag-retrievers` directory:
 
    ```shell
    echo "data_path=../data\nOPENAI_API_KEY=<YOUR-OPENAI-API-KEY>\nTOKENIZERS_PARALLELISM=False\nNEBULA_USER=root\nNEBULA_PASSWORD=nebula\nNEBULA_ADDRESS=<YOUR-IP-ADDRESS:9669>" > .env
@@ -86,7 +86,14 @@ Before diving into this demo, please ensure that your system meets the following
    - Install NebulaGraph locally. Refer to the installation instructions for Docker Desktop here. Once installed, click Studio in Browser to use NebulaGraph. Replace <YOUR-IP-ADDRESS:9669> with your own IP address in the `.env` file under the `/rag-retrievers` directory.
    - Execute the code blocks in Jupyter Notebook `exp_kg.ipynb` under `/rag-retrievers/notebooks`, and conduct testing with appropriate questions.
 
-7. Fill in your own `<YOUR-OPENAI-API-KEY>` in the `.env` file under the `/src/streamlit-web` directory.
+7. Create a .env file in the `/src/streamlit-web` directory:
+
+   ```shell
+   cd src/streamlit-web
+   echo "OPENAI_API_KEY=<YOUR-OPENAI-API-KEY>\nTOKENIZERS_PARALLELISM=False" > .env
+   ```
+
+   Replace `<YOUR-OPENAI-API-KEY>` with your own API key in the `.env` file under the `/src/streamlit-web` directory.
 
 8. Launch the demo:
 
