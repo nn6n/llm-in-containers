@@ -13,7 +13,7 @@ sys.path.append("..")
 
 #from src.local_models.llm import MyLLM, LlamaCPPLLM
 from llama_index.llms.openai import OpenAI
-from local_models.embeddings import get_embed_model
+from llama_index.embeddings.openai import OpenAIEmbedding
 
 from data_loader.splitting import split_by_md_headers
 from data_loader.parsing import get_html, extract_md_tables
@@ -49,7 +49,7 @@ logger = logging.getLogger(__name__)
 def build_table_n_text_engine():
     logger.info('loading llm and embed_model...')
     #set up llm and embed_model
-    embed_model = get_embed_model(model_name=os.environ['embed_path'],  model_kwargs={'device': 'cpu'}, encode_kwargs = {'normalize_embeddings': True})
+    embed_model = OpenAIEmbedding()
     #llm = MyLLM(pretrained_model_name_or_path=os.environ['llm_path'], device_map="mps", context_window=4096, num_output=512, model_name='chatglm3-6b')
     llm = OpenAI(temperature=0)
     #service_context = ServiceContext.from_defaults(llm=llm, embed_model=embed_model)

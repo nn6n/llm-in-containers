@@ -11,7 +11,7 @@ import sys
 sys.path.append("..")
 
 from llama_index.llms.openai import OpenAI
-from local_models.embeddings import get_embed_model
+from llama_index.embeddings.openai import OpenAIEmbedding
 
 
 from llama_index.core.retrievers import VectorIndexRetriever, KGTableRetriever
@@ -75,7 +75,7 @@ def build_graph_rag_engine():
     #kg_index.storage_context.persist(persist_dir="db/kg_index")
 
     logger.info('loading llm and embed_model...')
-    embed_model = get_embed_model(model_name=os.environ['embed_path'],  model_kwargs={'device': 'cpu'}, encode_kwargs = {'normalize_embeddings': True})
+    embed_model = OpenAIEmbedding()
 
     llm = OpenAI()
 

@@ -12,7 +12,7 @@ sys.path.append("..")
 
 #from local_models.llm import MyLLM, LlamaCPPLLM
 from llama_index.llms.openai import OpenAI
-from local_models.embeddings import get_embed_model
+from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core import ServiceContext
 
 from data_loader.parsing import MDDF
@@ -54,15 +54,14 @@ logger = logging.getLogger(__name__)
 
 
 #format md as DF
-df = split_by_md_headers('../../data/RAG-塞尔达王国之泪材料.md')
+df = split_by_md_headers('../../data/RAG-Zelda-Tears-of-the-Kingdom(Fan-made).md')
 #construct node mappings
 key_words, docs = MDDF(df, [1]).construct_node_mappings(show_progress=False)#remove useless contents
 
 @st.cache_resource
 def build_doc_agent_engine(similarity_top_k=2): #key_words, docs=None, 
     logger.info('loading llm and embed_model...')
-    embed_model = get_embed_model(model_name=os.environ['embed_path'],  model_kwargs={'device': 'cpu'}, encode_kwargs = {'normalize_embeddings': True})
-
+    embed_model = OpenAIEmbedding()
     llm = OpenAI(temperature=0)
     service_context = ServiceContext.from_defaults(llm=llm, embed_model=embed_model)
 
