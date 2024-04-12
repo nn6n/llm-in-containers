@@ -15,8 +15,6 @@ This demonstration has explored three directions using three distinct query engi
 - **Retrieval**: Rebuild previously saved indices from disk using the llama-index framework, transforming table and text indices into corresponding `table_tool` and `text_tool` query engines.
 - **Answer Synthesis**: The OpenAIAgent is configured to decide which tool to use based on the characteristics of the query. Conventional questions prefer `text_tool`; numerical and tabular queries lean towards `table_tool`; complex reasoning requires a combination of both tools. Additionally, the setting allows for a maximum number of function calls to be set to 3. The agent merges information retrieved by both table and text tools to form a comprehensive answer. This may include analyzing and interpreting structured data as well as understanding and elaborating on textual content.
 
-<details>
-
 We have not only improved the accuracy of table data retrieval for documents written in Markdown but also enhanced the capability of information extraction from the entire document, providing robust support for users when dealing with mixed documents containing both text paragraphs and tables.
 
 ```mermaid
@@ -57,15 +55,11 @@ flowchart TD
 
 ```
 
-</details>
-
 ### 2. Query Intent (Document Agent: Summary_Tool & Vector_Tool)
 
 - **Markdown File Preprocessing**: Initially, Markdown files are divided into independent sections based on their titles and subtitles. Each section generates an embedding vector `VectorStoreIndex`, and additionally, a summary-style secondary index `SummaryIndex` is created for each part. These indices are persistently stored on the hard disk, allowing for rapid reconstruction of indexes for subsequent queries without reprocessing the original data.
 - **Retrieval**: The detailed and summary indices are reconstructed from the hard disk through the llama-index framework. Index generation is based on keywords derived from parsing the content of the Markdown documents. Then, a document proxy is created for each keyword, and two different retrieval tools are set up to handle distinct types of retrieval tasks: a vector tool `vector_tool` for queries requiring detailed information, and a summary tool `summary_tool` suitable for answering questions that need a high-level overview. Under the guidance of index nodes containing directive instructions, a top-level composite retriever and search engine are created, forming a flexible and effective query processing architecture.
 - **Response Synthesis**: Upon receiving a query request, OpenAIAgent is configured to choose the most appropriate tool based on the nature and complexity of the question. If the question is general or requires a summary, the `summary_tool` is prioritized; if the query involves specific details, the `vector_tool` is favored. In this way, the agent utilizes the retrieved detailed vector data or summary information to synthesize a comprehensive, context-relevant answer to accommodate the varying intents of users' queries.
-
-<details>
 
 By establishing a hierarchical structure of document proxies with embeddings and summaries, the system is capable of providing targeted answers for queries ranging from macro overviews to micro, data-intensive details. This approach allows the system to offer customized responses based on the user's familiarity with the knowledge base and the specific nature of the query, thereby covering a wide range of inquiries. General questions like "What is the setting of 'The Kingdom of Tears'?" and numerical queries such as "What is the speed of Link's horse Epona?" can be effectively addressed.
 
@@ -103,8 +97,6 @@ graph TD
     T --> U[End]
 ```
 
-</details>
-
 ### 3. Graph Rag (KGI-Based)
 
 - **Markdown File Preprocessing**
@@ -124,8 +116,6 @@ graph TD
   - Parsing Text Answers and Knowledge Relationships: Utilize `get_response_n_kg_rel_query(response)` to parse text answers and related entity relationships within the knowledge graph.
   - Triple Extraction: Extract triples in the form of `(Entity, Relationship, Entity)` from the knowledge graph relationship text.
   - Result Summary: The query engine summarizes information in a tree-like structure and generates hierarchical and structured answers based on the user's question.
-
-<details>
 
 Integrating knowledge graphs into queries provides numerous advantages such as highly structured data, enhanced semantic understanding, in-depth relational analysis, and precise information filtering, significantly enhancing the performance of information retrieval and question-answering systems. However, this approach also faces challenges including high construction costs, requirements for data timeliness, limited coverage, complex handling of entity ambiguities, and a high dependency on data quality. Further exploration will be conducted subsequently.
 
@@ -149,8 +139,6 @@ flowchart TB
   VisualPresentation --> End((End))
 
 ```
-
-</details>
 
 ## Prerequisites
 
