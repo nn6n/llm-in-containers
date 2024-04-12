@@ -3,16 +3,19 @@
 ## Technical Background
 
 This demo utilizes technologies such as llama-index, OpenAI's models, and Knowledge Graph Indexing (KGI) to implement Retrieval-Augmented Generation (RAG), enhancing the efficiency and accuracy of private domain material retrieval queries.
+This demonstration has explored three directions using three distinct query engines:
 
-- **Enhanced Data Retrieval**: The demo successfully addresses queries associated with structured tabular data and unstructured plain text by isolating each type of content.
-- **Intuitive Query Intent Recognition**: By discerning the user's search intent, the system differentiates between broad overviews and specific details to fulfill informational needs accurately.
-- **Knowledge Graph Indexing (KGI)**: Utilizing a tree-like structure summary within the Graph Rag component, our demo produces well-organized hierarchical responses that efficiently tackle data-intensive inquiries.
+1. It deals with queries related to structured tabular data and unstructured plain text by isolating each type of content.
+2. By identifying the user's search intent, it distinguishes between broad overviews and specific details to accurately fulfill information needs.
+3. Utilizing a tree-like structure summary within the Graph Rag component, it responds to data-intensive queries in the form of rich graph-based representations.
 
-### Textual Features (Table+Text: Table-Tool & Text-Tool)
+### 1. Textual Features (Table+Text: Table-Tool & Text-Tool)
 
-1. **Markdown File Preprocessing**: Split md files into sections using headings and subheadings to structure the document. Isolate table data separately and create vector-based query indices for both text and table data. Persist indices on disk under `db_stores/table_index` and `db_stores/text_index` for rebuilding without reprocessing the raw data.
-2. **Retrieval**: Rebuild previously saved indices from disk, turning table and text indices into corresponding `table_tool` and `text_tool` query engines. The proxy decides which tool to use based on the characteristics of the query. Conventional questions prefer `text_tool`; numerical and tabular queries lean towards `table_tool`; complex reasoning requires a combination of both tools.
-3. **Answer Synthesis**: The proxy, as required, merges information retrieved by both table and text tools to form a comprehensive answer. This may include analyzing and interpreting structured data as well as understanding and elaborating on textual content.
+- **Markdown File Preprocessing**: Divide Markdown files into separate sections according to the headings and subheadings, recognize the plain text content and table content after converting to HTML format. Isolate the table data separately, and create vector-based query indexes for both text and table data. Persist the indices on the disk to enable subsequent queries to rebuild the indices without reprocessing the original data.
+- **Retrieval**: Rebuild previously saved indices from disk using the llama-index framework, transforming table and text indices into corresponding `table_tool` and `text_tool` query engines.
+- **Answer Synthesis**: The OpenAIAgent is configured to decide which tool to use based on the characteristics of the query. Conventional questions prefer `text_tool`; numerical and tabular queries lean towards `table_tool`; complex reasoning requires a combination of both tools. Additionally, the setting allows for a maximum number of function calls to be set to 3. The agent merges information retrieved by both table and text tools to form a comprehensive answer. This may include analyzing and interpreting structured data as well as understanding and elaborating on textual content.
+
+<details>
 
 We have not only improved the accuracy of table data retrieval for documents written in Markdown but also enhanced the capability of information extraction from the entire document, providing robust support for users when dealing with mixed documents containing both text paragraphs and tables.
 
@@ -45,22 +48,26 @@ flowchart TD
     O --> Q[Define Query Toolkit]
     P --> Q
 
-    Q --> R[Construct OpenAIAgent Proxy]
+    Q --> R[Construct OpenAIAgent]
 
-    R --> S[Initiate Query with Proxy]
+    R --> S[Initiate Query with Agent]
     S --> T[Output Answer]
 
     T --> U[End]
 
 ```
 
-### Query Intent (Document Agent: Summary_Tool & Vector_Tool)
+</details>
 
-1. **Markdown File Preprocessing**: Split the md file, organizing the document structure through headings and subheadings. For each extracted section, generate an embedding vector `VectorStoreIndex`, and simultaneously create a summary-style secondary index `SummaryIndex`. Persist the indices to disk under `db_stores/doc_agent_vector_index` and `db_stores/doc_agent_summary_index`, so that they can be reconstructed for queries without having to reprocess the raw data.
-2. **Retrieval**: First, use the `rebuild_index` function to rebuild the detailed and summary indices from persistent storage. Then, create a document agent for each keyword, setting up two types of query tools to handle retrieval tasks for details or summaries. Finally, with an index node composed of guidance instructions, a top-level composite retriever and accompanying query engine are created to implement a flexible and efficient query processing architecture.
-3. **Answer Synthesis**: Upon receiving a query request, the agent selects the appropriate tool based on the nature of the question: if the question seeks summary information, it would prefer to use the `summary_tool`; if the question requires detailed data, it would opt for the `vector_tool`. Subsequently, the agent synthesizes a comprehensive and contextually appropriate answer using the retrieved detailed vector data and summary information to satisfy the user's need.
+### 2. Query Intent (Document Agent: Summary_Tool & Vector_Tool)
 
-A hierarchy of document agents has been built based on embedding vectors and summaries, utilizing these agents to fetch relevant details and synthesizing them into coherent answers for posed questions. This system can provide flexible responses tailored to the user’s familiarity with the knowledge base and the specific nature of the query, ranging from macroscopic topic summaries to microscopic, data-intensive answers.
+- **Markdown File Preprocessing**: Initially, Markdown files are divided into independent sections based on their titles and subtitles. Each section generates an embedding vector `VectorStoreIndex`, and additionally, a summary-style secondary index `SummaryIndex` is created for each part. These indices are persistently stored on the hard disk, allowing for rapid reconstruction of indexes for subsequent queries without reprocessing the original data.
+- **Retrieval**: The detailed and summary indices are reconstructed from the hard disk through the llama-index framework. Index generation is based on keywords derived from parsing the content of the Markdown documents. Then, a document proxy is created for each keyword, and two different retrieval tools are set up to handle distinct types of retrieval tasks: a vector tool `vector_tool` for queries requiring detailed information, and a summary tool `summary_tool` suitable for answering questions that need a high-level overview. Under the guidance of index nodes containing directive instructions, a top-level composite retriever and search engine are created, forming a flexible and effective query processing architecture.
+- **Response Synthesis**: Upon receiving a query request, OpenAIAgent is configured to choose the most appropriate tool based on the nature and complexity of the question. If the question is general or requires a summary, the `summary_tool` is prioritized; if the query involves specific details, the `vector_tool` is favored. In this way, the agent utilizes the retrieved detailed vector data or summary information to synthesize a comprehensive, context-relevant answer to accommodate the varying intents of users' queries.
+
+<details>
+
+By establishing a hierarchical structure of document proxies with embeddings and summaries, the system is capable of providing targeted answers for queries ranging from macro overviews to micro, data-intensive details. This approach allows the system to offer customized responses based on the user's familiarity with the knowledge base and the specific nature of the query, thereby covering a wide range of inquiries. General questions like "What is the setting of 'The Kingdom of Tears'?" and numerical queries such as "What is the speed of Link's horse Epona?" can be effectively addressed.
 
 ```mermaid
 graph TD
@@ -96,11 +103,31 @@ graph TD
     T --> U[End]
 ```
 
-### Graph Rag (KGI-Based)
+</details>
 
-1. Preprocessing of Markdown Files: Files are loaded and indexed for easy retrieval later on. The data is indexed using `KnowledgeGraphIndex.from_documents()`, with a maximum set for the number of triplets per block. Indices are persisted to disk at `db_stores/kg_index` for reconstruction during queries without the need to process the raw data again.
-2. Retrieval: Initialize a query engine configured to include relevant texts, use a hybrid retrieval mode, and provide tree-like summary responses.
-3. Answer Synthesis: Parse out textual answers and knowledge graph relation texts; extract triplets from the relation texts in the form of (entity, relationship, entity). The query engine summarizes information in a tree-like structure, ultimately generating structured and hierarchical answers that satisfy user queries.
+### 3. Graph Rag (KGI-Based)
+
+- **Markdown File Preprocessing**
+
+  - File Loading and Indexing: Markdown files are loaded into the system and indexed for quick retrieval in subsequent processes.
+
+  - Knowledge Graph Index Construction: Data are indexed using the `KnowledgeGraphIndex.from_documents()` function, setting a maximum number of triples for each chunk.
+
+  - Index Persistence: The generated index is persistently stored in the `../db_stores/kg_index` directory on disk, allowing the index to be rebuilt during queries without reprocessing the raw data.
+
+- **Retrieval**
+
+  - Query Engine Initialization: By invoking the `kg_index.as_query_engine()` method, the query engine is configured with a hybrid mode (exact and fuzzy) that includes text information, facilitating the generation of tree-like structured summary responses.
+
+- **Response Synthesis**
+
+  - Parsing Text Answers and Knowledge Relationships: Utilize `get_response_n_kg_rel_query(response)` to parse text answers and related entity relationships within the knowledge graph.
+  - Triple Extraction: Extract triples in the form of `(Entity, Relationship, Entity)` from the knowledge graph relationship text.
+  - Result Summary: The query engine summarizes information in a tree-like structure and generates hierarchical and structured answers based on the user's question.
+
+<details>
+
+Integrating knowledge graphs into queries provides numerous advantages such as highly structured data, enhanced semantic understanding, in-depth relational analysis, and precise information filtering, significantly enhancing the performance of information retrieval and question-answering systems. However, this approach also faces challenges including high construction costs, requirements for data timeliness, limited coverage, complex handling of entity ambiguities, and a high dependency on data quality. Further exploration will be conducted subsequently.
 
 ```mermaid
 flowchart TB
@@ -122,6 +149,8 @@ flowchart TB
   VisualPresentation --> End((End))
 
 ```
+
+</details>
 
 ## Prerequisites
 
