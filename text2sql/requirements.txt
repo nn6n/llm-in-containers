@@ -1,7 +1,9 @@
-cryptography==42.0.2
-langchain==0.1.5
-langchain-community==0.0.18
+cryptography==44.0.1
+langchain==0.2.10
+langchain-community==0.2.5
 langchain-openai==0.0.5
 pydantic==2.6.1
-pymysql==1.1.0
-streamlit==1.30.0
+pymysql==1.1.1
+streamlit==1.43.2
+langchain-core>=0.1.53 # not directly required, pinned by Snyk to avoid a vulnerability
+tornado>=6.5 # not directly required, pinned by Snyk to avoid a vulnerability
