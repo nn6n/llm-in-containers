@@ -5,3 +5,5 @@ langchain-openai==0.0.5
 pydantic==2.6.1
 pymysql==1.1.0
 streamlit==1.30.0
+langchain-core>=0.3.81 # not directly required, pinned by Snyk to avoid a vulnerability
+marshmallow>=3.26.2 # not directly required, pinned by Snyk to avoid a vulnerability
