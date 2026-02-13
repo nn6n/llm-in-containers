@@ -1,7 +1,8 @@
-cryptography==42.0.2
+cryptography==46.0.5
 langchain==0.1.5
 langchain-community==0.0.18
-langchain-openai==0.0.5
+langchain-openai==1.1.9
 pydantic==2.6.1
 pymysql==1.1.0
 streamlit==1.30.0
+pillow>=12.1.1 # not directly required, pinned by Snyk to avoid a vulnerability
